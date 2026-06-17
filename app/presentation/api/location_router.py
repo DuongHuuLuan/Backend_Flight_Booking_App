@@ -18,7 +18,7 @@ async def get_countries(
 
 @router.get("/cities")
 async def get_cities(
-    country: str = Query(...),
+    country: str = Query(alias="countryId"),
     uc: GetCitiesUseCase = Depends(get_cities_usecase),
 ):
     cities = await uc.execute(country)

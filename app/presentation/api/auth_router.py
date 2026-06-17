@@ -51,7 +51,10 @@ async def register(
     body: RegisterRequest,
     uc: RegisterUserUseCase = Depends(get_register_usecase),
 ):
-    user = await uc.execute(RegisterUserInput(**body.model_dump()))
+    try:
+        user = await uc.execute(RegisterUserInput(**body.model_dump()))
+    except ValueError as e:
+        raise ConflictException(str(e))
     token = create_access_token(data={"sub": str(user.id)})
     return BaseResponse(
         data=UserResponse(
