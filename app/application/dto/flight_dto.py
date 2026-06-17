@@ -12,21 +12,21 @@ class AirportResponse(BaseModel):
 class AirlineResponse(BaseModel):
     id: str
     name: str
-    logo_url: str
+    logoUrl: str
 
 
 class FlightResponse(BaseModel):
     id: str
     airline: AirlineResponse
-    flight_number: str
-    departure_airport: AirportResponse
-    arrival_airport: AirportResponse
-    departure_time: datetime
-    arrival_time: datetime
-    duration_minutes: int
+    flightNumber: str
+    departureAirport: AirportResponse
+    arrivalAirport: AirportResponse
+    departureTime: datetime
+    arrivalTime: datetime
+    duration: int
     price: float
     stops: int
-    cabin_class: str
+    cabinClass: str
 
 
 class FlightSearchRequest(BaseModel):

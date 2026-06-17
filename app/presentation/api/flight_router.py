@@ -18,27 +18,27 @@ def _to_flight_response(flight) -> FlightResponse:
         airline=AirlineResponse(
             id=flight.airline.id,
             name=flight.airline.name,
-            logo_url=flight.airline.logo_url,
+            logoUrl=flight.airline.logo_url,
         ),
-        flight_number=flight.flight_number,
-        departure_airport=AirportResponse(
+        flightNumber=flight.flight_number,
+        departureAirport=AirportResponse(
             code=flight.departure_airport.code,
             name=flight.departure_airport.name,
             city=flight.departure_airport.city,
             country=flight.departure_airport.country,
         ),
-        arrival_airport=AirportResponse(
+        arrivalAirport=AirportResponse(
             code=flight.arrival_airport.code,
             name=flight.arrival_airport.name,
             city=flight.arrival_airport.city,
             country=flight.arrival_airport.country,
         ),
-        departure_time=flight.departure_time,
-        arrival_time=flight.arrival_time,
-        duration_minutes=flight.duration_minutes,
+        departureTime=flight.departure_time,
+        arrivalTime=flight.arrival_time,
+        duration=flight.duration_minutes,
         price=flight.price,
         stops=flight.stops,
-        cabin_class=flight.cabin_class,
+        cabinClass=flight.cabin_class,
     )
 
 
