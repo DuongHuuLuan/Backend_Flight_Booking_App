@@ -17,7 +17,8 @@ class RegisterRequest(BaseModel):
 
 class UserResponse(BaseModel):
     access_token: int        
-    accessToken: str         
+    accessToken: str
+    refresh_token: str         
     name: str
     email: str
     password: str
@@ -41,3 +42,24 @@ class ResetPasswordRequest(BaseModel):
     email: str | None = None
     phone: str | None = None
     new_password: str
+    
+
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str
+    
+    
+class TokenResponse(BaseModel):
+    access_token: str
+    accessToken: str
+    refresh_token: str
+    token_type: str = "bearer"
+    
+class UserMeResponse(BaseModel):
+    id: int
+    name: str
+    email: str
+    phone: str
+    country: str
+    city: str
+    avatar: str | None = None
+    
