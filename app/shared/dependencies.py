@@ -25,6 +25,8 @@ from app.application.use_case.flight.get_all_flights_usecase import GetAllFlight
 from app.application.use_case.location.get_countries_usecase import GetCountriesUseCase
 from app.application.use_case.location.get_cities_usecase import GetCitiesUseCase
 from typing import AsyncIterator
+from app.application.use_case.auth.refresh_token_usecase import RefreshTokenUseCase
+from app.application.use_case.auth.get_me_usecase import GetMeUseCase
 
 security_scheme = HTTPBearer()
 
@@ -107,7 +109,16 @@ def get_cities_usecase(
 ) -> GetCitiesUseCase:
     return GetCitiesUseCase(repo)
 
+#-- Auth use case
+def get_refresh_token_usecase(
+    repo: AbstractUserRepository = Depends(get_user_repo)
+) -> RefreshTokenUseCase:
+    return RefreshTokenUseCase(repo)
 
+def get_me_usecase(
+    repo: AbstractUserRepository = Depends(get_user_repo),
+) -> GetMeUseCase:
+    return GetMeUseCase(repo)
 # ── Auth Guard ──
 
 async def get_current_user_id(
