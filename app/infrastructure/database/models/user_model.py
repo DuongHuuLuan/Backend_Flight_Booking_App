@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, DateTime, String
+from sqlalchemy.orm import relationship
 
 from app.infrastructure.database.base import Base
 
@@ -15,3 +16,5 @@ class UserModel(Base):
     password = Column(String(100))
     avatar = Column(String(255))
     created_at = Column(DateTime)
+    
+    bookings = relationship("BookingModel", back_populates="user")
