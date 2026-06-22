@@ -2,6 +2,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
+from app.application.use_case.booking.create_booking_usecase import CreateBookingUseCase
+from app.application.use_case.flight.get_flight_detail_usecase import GetFlightDetailUseCase
+from app.domain.repositories.booking_repository import AbstractBookingRepository
 from app.infrastructure.database.session import get_db as _get_db
 from app.core.security import decode_access_token
 from app.core.exceptions import UnauthorizedException
@@ -10,6 +13,7 @@ from app.domain.repositories.user_repository import AbstractUserRepository
 from app.domain.repositories.flight_repository import AbstractFlightRepository
 from app.domain.repositories.location_repository import AbstractLocationRepository
 
+from app.infrastructure.repositories.booking_repository_impl import BookingRepository
 from app.infrastructure.repositories.user_repository_impl import UserRepository
 from app.infrastructure.repositories.flight_repository_impl import FlightRepository
 from app.infrastructure.repositories.location_repository_impl import LocationRepository
@@ -48,6 +52,9 @@ def get_flight_repo(db: AsyncSession = Depends(get_db)) -> AbstractFlightReposit
 
 def get_location_repo(db: AsyncSession = Depends(get_db)) -> AbstractLocationRepository:
     return LocationRepository(db)
+
+def get_booking_repo(db: AsyncSession = Depends(get_db)) -> AbstractBookingRepository:
+    return BookingRepository(db)
 
 
 # ── Use Cases ──
@@ -138,3 +145,14 @@ async def get_current_user_id(
             detail="Invalid token payload",
         )
     return int(user_id)
+
+def get_flight_detail_usecase(
+    repo: AbstractFlightRepository = Depends(get_flight_repo)
+) -> GetFlightDetailUseCase:
+    return GetFlightDetailUseCase(repo)
+
+def get_create_booking_usecase(
+    booking_repo: AbstractBookingRepository = Depends(get_booking_repo),
+    flight_repo: AbstractFlightRepository = Depends(get_flight_repo),
+) -> CreateBookingUseCase:
+    return CreateBookingUseCase(booking_repo, flight_repo)

@@ -37,3 +37,21 @@ class FlightSearchRequest(BaseModel):
     return_date: str | None = None
     passengers: int = 1
     cabin_class: str = "economy"
+    
+    
+class CabinClassOption(BaseModel):
+    cabinClass: str
+    price: float
+    amenities: list[str]
+
+class FlightDetailResponse(BaseModel):
+    id: str
+    airline: AirlineResponse
+    flightNumber: str
+    departureAirport: AirportResponse
+    arrivalAirport: AirportResponse
+    departureTime: datetime
+    arrivalTime: datetime
+    duration: int
+    stops: int
+    cabinClasses: list[CabinClassOption]

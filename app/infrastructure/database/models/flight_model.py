@@ -46,3 +46,5 @@ class FlightModel(Base):
         foreign_keys=[arrival_airport_code],
         back_populates="arriving_flights"
     )
+    
+    bookings = relationship("BookingModel", back_populates="flight")

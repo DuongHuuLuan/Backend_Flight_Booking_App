@@ -13,3 +13,6 @@ class AbstractFlightRepository(ABC):
 
     @abstractmethod
     async def get_all(self) -> list[FlightEntity]: ...
+    
+    @abstractmethod
+    async def get_by_id(self, flight_id: str) -> FlightEntity | None: ...
