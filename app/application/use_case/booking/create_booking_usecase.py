@@ -27,8 +27,12 @@ class CreateBookingUseCase:
         if flight is None:
             raise ValueError("Flight not found")
 
+        if not request.seat_labels:
+            raise ValueError("At least one seat must be selected")
+
         multiplier = self.CABIN_MULTIPLIERS.get(request.cabin_class, 1.0)
-        total_price = round(flight.price * multiplier, 2)
+        total_price = round(flight.price * multiplier * len(request.seat_labels), 2)
+        seat_labels_csv = ",".join(request.seat_labels)
 
         now = datetime.utcnow()
         entity = BookingEntity(
@@ -39,11 +43,10 @@ class CreateBookingUseCase:
             total_price=total_price,
             status="confirmed",
             created_at=now,
-            selected_seat=request.seat_label
+            selected_seat=seat_labels_csv
         )
         created = await self.booking_repo.create(entity)
-        if request.seat_label:
-            await self.booking_repo.update_seat(created.id, request.seat_label)
+        await self.booking_repo.update_seat(created.id, seat_labels_csv)
         return BookingResponse(
             id=created.id,
             flightId=created.flight_id,
@@ -51,5 +54,5 @@ class CreateBookingUseCase:
             totalPrice=created.total_price,
             status=created.status,
             createdAt=created.created_at,
-            selectedSeat=created.selected_seat
+            selectedSeats=seat_labels_csv
         )

@@ -17,14 +17,17 @@ class SeatRepository(AbstractSeatRepository):
         )
         seats = result.scalars().all()
 
-        # Lấy danh sách ghế đã được đặt trong flight này
+        # Lấy danh sách ghế đã được đặt trong flight này (CSV)
         booked = await self.db.execute(
             select(BookingModel.selected_seat).where(
                 BookingModel.flight_id == flight_id,
                 BookingModel.selected_seat.isnot(None),
             )
         )
-        reserved_labels = {row[0] for row in booked.all()}
+        reserved_labels: set[str] = set()
+        for row in booked.all():
+            if row[0]:
+                reserved_labels.update(row[0].split(","))
 
         entities = []
         for s in seats:

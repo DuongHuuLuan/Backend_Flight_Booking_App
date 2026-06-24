@@ -19,5 +19,5 @@ class GetBookingUseCase:
             totalPrice=booking.total_price,
             status=booking.status,
             createdAt=booking.created_at,
-            selectedSeat=booking.selected_seat,
+            selectedSeats=booking.selected_seat,
         )
