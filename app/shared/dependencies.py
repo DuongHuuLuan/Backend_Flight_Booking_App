@@ -4,11 +4,13 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from app.application.use_case.booking.create_booking_usecase import CreateBookingUseCase
 from app.application.use_case.booking.get_booking_usecase import GetBookingUseCase
+from app.application.use_case.booking.get_booking_detail_usecase import GetBookingDetailUseCase
 from app.application.use_case.flight.get_flight_detail_usecase import GetFlightDetailUseCase
 from app.application.use_case.seat.get_seat_layout_usecase import GetSeatLayoutUseCase
 from app.application.use_case.seat.select_seat_usecase import SelectSeatUseCase
 from app.domain.repositories.booking_repository import AbstractBookingRepository
 from app.domain.repositories.seat_repository import AbstractSeatRepository
+from app.domain.repositories.passenger_repository import AbstractPassengerRepository
 from app.infrastructure.database.session import get_db as _get_db
 from app.core.security import decode_access_token
 from app.core.exceptions import UnauthorizedException
@@ -22,6 +24,7 @@ from app.infrastructure.repositories.seat_repository_impl import SeatRepository
 from app.infrastructure.repositories.user_repository_impl import UserRepository
 from app.infrastructure.repositories.flight_repository_impl import FlightRepository
 from app.infrastructure.repositories.location_repository_impl import LocationRepository
+from app.infrastructure.repositories.passenger_repository_impl import PassengerRepository
 from app.application.use_case.auth.login_user_usecase import LoginUserUseCase
 from app.application.use_case.auth.register_user_usecase import RegisterUserUseCase
 from app.application.use_case.auth.logout_user_usecase import LogoutUserUseCase
@@ -36,6 +39,7 @@ from app.application.use_case.location.get_cities_usecase import GetCitiesUseCas
 from typing import AsyncIterator
 from app.application.use_case.auth.refresh_token_usecase import RefreshTokenUseCase
 from app.application.use_case.auth.get_me_usecase import GetMeUseCase
+from app.application.use_case.passenger.create_passengers_usecase import CreatePassengersUseCase
 
 security_scheme = HTTPBearer()
 
@@ -180,3 +184,22 @@ def get_select_seat_usecase(
     booking_repo: AbstractBookingRepository = Depends(get_booking_repo),
 ) -> SelectSeatUseCase:
     return SelectSeatUseCase(seat_repo, booking_repo)
+
+
+def get_passenger_repo(db: AsyncSession = Depends(get_db)) -> AbstractPassengerRepository:
+    return PassengerRepository(db)
+
+
+def get_create_passengers_usecase(
+    passenger_repo: AbstractPassengerRepository = Depends(get_passenger_repo),
+    booking_repo: AbstractBookingRepository = Depends(get_booking_repo),
+) -> CreatePassengersUseCase:
+    return CreatePassengersUseCase(passenger_repo, booking_repo)
+
+
+def get_booking_detail_usecase(
+    booking_repo: AbstractBookingRepository = Depends(get_booking_repo),
+    flight_repo: AbstractFlightRepository = Depends(get_flight_repo),
+    passenger_repo: AbstractPassengerRepository = Depends(get_passenger_repo),
+) -> GetBookingDetailUseCase:
+    return GetBookingDetailUseCase(booking_repo, flight_repo, passenger_repo)
