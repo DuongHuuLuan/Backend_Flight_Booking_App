@@ -1,6 +1,7 @@
 import asyncio
 from datetime import datetime
 from sqlalchemy import select
+from app.infrastructure.database.models.seat_model import SeatModel
 from app.infrastructure.database.session import async_session_factory
 from app.infrastructure.database.models.country_model import CountryModel
 from app.infrastructure.database.models.city_model import CityModel
@@ -132,6 +133,24 @@ async def seed():
                 duration_minutes=915, price=980, stops=2, cabin_class="economy"),
         ]
         db.add_all(flights)
+        
+        seat_labels =[]
+        for row in range(1, 21):
+            for pos, label in enumerate(["A", "B", "C", "D"], start=1):
+                seat_labels.append((f"{row}{label}", row, pos))
+
+        for flight in flights:
+            cabin = flight.cabin_class
+            for label, row, pos in seat_labels:
+                db.add(SeatModel(
+                id=f"{flight.id}-{label}",
+                flight_id=flight.id,
+                seat_label=label,
+                cabin_class=cabin,
+                row_number=row,
+                position=pos,
+                is_available=True,
+            ))
         await db.commit()
         print(f"Seed complete: {len(countries)} countries, {len(cities)} cities, "
               f"{len(airlines)} airlines, {len(airports)} airports, {len(flights)} flights")

@@ -5,6 +5,7 @@ from pydantic import BaseModel
 class CreateBookingRequest(BaseModel):
     flight_id: str
     cabin_class: str
+    seat_label: str | None = None
     
 class BookingResponse(BaseModel):
     id: str
@@ -12,4 +13,5 @@ class BookingResponse(BaseModel):
     cabinClass: str
     totalPrice: float
     status: str
+    selectedSeat: str | None = None
     createdAt: datetime
