@@ -3,8 +3,12 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from app.application.use_case.booking.create_booking_usecase import CreateBookingUseCase
+from app.application.use_case.booking.get_booking_usecase import GetBookingUseCase
 from app.application.use_case.flight.get_flight_detail_usecase import GetFlightDetailUseCase
+from app.application.use_case.seat.get_seat_layout_usecase import GetSeatLayoutUseCase
+from app.application.use_case.seat.select_seat_usecase import SelectSeatUseCase
 from app.domain.repositories.booking_repository import AbstractBookingRepository
+from app.domain.repositories.seat_repository import AbstractSeatRepository
 from app.infrastructure.database.session import get_db as _get_db
 from app.core.security import decode_access_token
 from app.core.exceptions import UnauthorizedException
@@ -14,6 +18,7 @@ from app.domain.repositories.flight_repository import AbstractFlightRepository
 from app.domain.repositories.location_repository import AbstractLocationRepository
 
 from app.infrastructure.repositories.booking_repository_impl import BookingRepository
+from app.infrastructure.repositories.seat_repository_impl import SeatRepository
 from app.infrastructure.repositories.user_repository_impl import UserRepository
 from app.infrastructure.repositories.flight_repository_impl import FlightRepository
 from app.infrastructure.repositories.location_repository_impl import LocationRepository
@@ -56,6 +61,8 @@ def get_location_repo(db: AsyncSession = Depends(get_db)) -> AbstractLocationRep
 def get_booking_repo(db: AsyncSession = Depends(get_db)) -> AbstractBookingRepository:
     return BookingRepository(db)
 
+def get_seat_repo(db: AsyncSession = Depends(get_db)) -> AbstractSeatRepository:
+    return SeatRepository(db)
 
 # ── Use Cases ──
 
@@ -156,3 +163,20 @@ def get_create_booking_usecase(
     flight_repo: AbstractFlightRepository = Depends(get_flight_repo),
 ) -> CreateBookingUseCase:
     return CreateBookingUseCase(booking_repo, flight_repo)
+
+def get_get_booking_usecase(
+    booking_repo: AbstractBookingRepository = Depends(get_booking_repo),
+) -> GetBookingUseCase:
+    return GetBookingUseCase(booking_repo)
+
+def get_seat_layout_usecase(
+    repo: AbstractSeatRepository = Depends(get_seat_repo),
+) -> GetSeatLayoutUseCase:
+    return GetSeatLayoutUseCase(repo)
+
+
+def get_select_seat_usecase(
+    seat_repo: AbstractSeatRepository = Depends(get_seat_repo),
+    booking_repo: AbstractBookingRepository = Depends(get_booking_repo),
+) -> SelectSeatUseCase:
+    return SelectSeatUseCase(seat_repo, booking_repo)

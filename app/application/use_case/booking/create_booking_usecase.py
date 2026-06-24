@@ -39,8 +39,11 @@ class CreateBookingUseCase:
             total_price=total_price,
             status="confirmed",
             created_at=now,
+            selected_seat=request.seat_label
         )
         created = await self.booking_repo.create(entity)
+        if request.seat_label:
+            await self.booking_repo.update_seat(created.id, request.seat_label)
         return BookingResponse(
             id=created.id,
             flightId=created.flight_id,
@@ -48,4 +51,5 @@ class CreateBookingUseCase:
             totalPrice=created.total_price,
             status=created.status,
             createdAt=created.created_at,
+            selectedSeat=created.selected_seat
         )

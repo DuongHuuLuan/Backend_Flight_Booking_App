@@ -1,5 +1,3 @@
-
-
 from app.domain.entities.booking_entity import BookingEntity
 from app.infrastructure.database.models.booking_model import BookingModel
 
@@ -14,5 +12,6 @@ class BookingMapper:
             cabin_class=model.cabin_class,
             total_price=model.total_price,
             status=model.status,
+            selected_seat=model.selected_seat,
             created_at=model.created_at
         )

@@ -11,3 +11,5 @@ class BookingEntity:
     total_price: float
     status: str
     created_at: datetime
+    selected_seat: str | None = None
+    
