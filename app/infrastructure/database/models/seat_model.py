@@ -1,4 +1,5 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy.orm import relationship
 
 from app.infrastructure.database.base import Base
 
@@ -12,3 +13,6 @@ class SeatModel(Base):
     row_number = Column(Integer, nullable=False)
     position = Column(Integer, nullable=False)
     is_available = Column(Boolean, default=True)
+    zone_id = Column(String(36), ForeignKey("seat_zones.id"))
+
+    zone = relationship("SeatZoneModel", back_populates="seats")

@@ -13,8 +13,11 @@ class BookingModel(Base):
     cabin_class = Column(String(20), nullable=False)
     total_price = Column(Float, nullable=False)
     status = Column(String(20), default="confirmed")
-    selected_seat = Column(String(255), nullable=True) 
+    selected_seat = Column(String(255), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+    zone_price_total = Column(Float, default=0)
+    service_total = Column(Float, default=0)
+    baggage_total = Column(Float, default=0)
 
     user = relationship("UserModel", back_populates="bookings")
     flight = relationship("FlightModel", back_populates="bookings")

@@ -6,3 +6,8 @@ from app.infrastructure.database.models.country_model import CountryModel
 from app.infrastructure.database.models.city_model import CityModel
 from app.infrastructure.database.models.booking_model import BookingModel
 from app.infrastructure.database.models.seat_model import SeatModel
+from app.infrastructure.database.models.passenger_model import PassengerModel
+from app.infrastructure.database.models.seat_zone_model import SeatZoneModel
+from app.infrastructure.database.models.service_model import ServiceModel
+from app.infrastructure.database.models.zone_service_eligibility_model import ZoneServiceEligibilityModel
+from app.infrastructure.database.models.booking_service_model import BookingServiceModel

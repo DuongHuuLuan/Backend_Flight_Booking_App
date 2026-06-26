@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+from app.domain.entities.seat_zone_entity import SeatZoneEntity
+
 
 @dataclass
 class SeatEntity:
@@ -9,4 +11,4 @@ class SeatEntity:
     row_number: int
     position: int
     is_available: bool
-    status: str = "available"
+    zone: SeatZoneEntity | None = None
