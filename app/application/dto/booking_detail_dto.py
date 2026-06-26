@@ -24,6 +24,12 @@ class BookingDetailPassengerResponse(BaseModel):
     mobilePhone: str
     nationality: str
     createdAt: datetime
+    seatLabel: str | None = None
+    ageGroup: str | None = None
+    address: str | None = None
+    email: str | None = None
+    idNumber: str | None = None
+    baggageLevel: str = "none"
 
 
 class BookingDetailResponse(BaseModel):
@@ -34,5 +40,8 @@ class BookingDetailResponse(BaseModel):
     status: str
     selectedSeats: str | None = None
     createdAt: datetime
+    zonePriceTotal: float = 0
+    serviceTotal: float = 0
+    baggageTotal: float = 0
     flight: BookingDetailFlightResponse
     passengers: list[BookingDetailPassengerResponse]

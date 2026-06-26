@@ -38,6 +38,11 @@ class CreatePassengersUseCase:
                 passport_number=d.passport_number,
                 nationality=d.nationality,
                 created_at=now,
+                seat_label=d.seat_label,
+                age_group=d.age_group,
+                address=d.address,
+                email=d.email,
+                id_number=d.id_number,
             )
             for d in request.passengers
         ]
@@ -52,6 +57,12 @@ class CreatePassengersUseCase:
                 passportNumber=p.passport_number,
                 nationality=p.nationality,
                 createdAt=p.created_at,
+                seatLabel=p.seat_label,
+                ageGroup=p.age_group,
+                address=p.address,
+                email=p.email,
+                idNumber=p.id_number,
+                baggageLevel=p.baggage_level or "none",
             )
             for p in created
         ]

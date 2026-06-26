@@ -41,6 +41,9 @@ class GetBookingDetailUseCase:
             status=booking.status,
             selectedSeats=booking.selected_seat,
             createdAt=booking.created_at,
+            zonePriceTotal=booking.zone_price_total,
+            serviceTotal=booking.service_total,
+            baggageTotal=booking.baggage_total,
             flight=BookingDetailFlightResponse(
                 id=flight.id,
                 airline=AirlineResponse(
@@ -76,6 +79,12 @@ class GetBookingDetailUseCase:
                     mobilePhone=p.mobile_phone,
                     nationality=p.nationality,
                     createdAt=p.created_at,
+                    seatLabel=p.seat_label,
+                    ageGroup=p.age_group,
+                    address=p.address,
+                    email=p.email,
+                    idNumber=p.id_number,
+                    baggageLevel=p.baggage_level or "none",
                 )
                 for p in passengers
             ],

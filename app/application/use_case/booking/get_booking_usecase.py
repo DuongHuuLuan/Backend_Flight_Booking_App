@@ -20,4 +20,7 @@ class GetBookingUseCase:
             status=booking.status,
             createdAt=booking.created_at,
             selectedSeats=booking.selected_seat,
+            zonePriceTotal=booking.zone_price_total,
+            serviceTotal=booking.service_total,
+            baggageTotal=booking.baggage_total,
         )

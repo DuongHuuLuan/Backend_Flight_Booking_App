@@ -10,3 +10,8 @@ class AbstractPassengerRepository(ABC):
 
     @abstractmethod
     async def get_by_booking_id(self, booking_id: str) -> list[PassengerEntity]: ...
+
+    @abstractmethod
+    async def update(
+        self, passenger_id: str, data: dict
+    ) -> PassengerEntity: ...
