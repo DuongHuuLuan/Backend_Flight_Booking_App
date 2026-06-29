@@ -14,4 +14,10 @@ class PassengerMapper:
             passport_number=model.passport_number,
             nationality=model.nationality,
             created_at=model.created_at,
+            seat_label=model.seat_label,
+            age_group=model.age_group,
+            address=model.address,
+            email=model.email,
+            id_number=model.id_number,
+            baggage_level=model.baggage_level or "none",
         )

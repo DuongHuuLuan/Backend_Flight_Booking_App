@@ -11,4 +11,5 @@ class SeatEntity:
     row_number: int
     position: int
     is_available: bool
+    status: str = "available"
     zone: SeatZoneEntity | None = None

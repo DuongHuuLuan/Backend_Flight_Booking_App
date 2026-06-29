@@ -13,5 +13,8 @@ class BookingMapper:
             total_price=model.total_price,
             status=model.status,
             selected_seat=model.selected_seat,
-            created_at=model.created_at
+            created_at=model.created_at,
+            zone_price_total=model.zone_price_total or 0,
+            service_total=model.service_total or 0,
+            baggage_total=model.baggage_total or 0,
         )

@@ -1,3 +1,4 @@
+from sqlalchemy import select, update as sa_update
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.domain.entities.passenger_entity import PassengerEntity
 from app.domain.repositories.passenger_repository import AbstractPassengerRepository
@@ -22,6 +23,11 @@ class PassengerRepository(AbstractPassengerRepository):
                 passport_number=p.passport_number,
                 nationality=p.nationality,
                 created_at=p.created_at,
+                seat_label=p.seat_label,
+                age_group=p.age_group,
+                address=p.address,
+                email=p.email,
+                id_number=p.id_number,
             )
             for p in passengers
         ]
@@ -32,9 +38,32 @@ class PassengerRepository(AbstractPassengerRepository):
         return [PassengerMapper.to_entity(m) for m in models]
 
     async def get_by_booking_id(self, booking_id: str) -> list[PassengerEntity]:
-        from sqlalchemy import select
         result = await self.db.execute(
             select(PassengerModel).where(PassengerModel.booking_id == booking_id)
         )
         models = result.scalars().all()
         return [PassengerMapper.to_entity(m) for m in models]
+
+    async def update(
+        self, passenger_id: str, data: dict
+    ) -> PassengerEntity:
+        allowed = {
+            "name", "mobile_phone", "date_of_birth", "passport_number",
+            "nationality", "address", "email", "id_number",
+            "age_group", "seat_label", "baggage_level",
+        }
+        clean = {k: v for k, v in data.items() if k in allowed and v is not None}
+
+        stmt = (
+            sa_update(PassengerModel)
+            .where(PassengerModel.id == passenger_id)
+            .values(**clean)
+            .execution_options(synchronize_session="fetch")
+        )
+        await self.db.execute(stmt)
+        await self.db.commit()
+
+        result = await self.db.execute(
+            select(PassengerModel).where(PassengerModel.id == passenger_id)
+        )
+        return PassengerMapper.to_entity(result.scalar_one())

@@ -1,5 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.orm import joinedload
 from app.domain.entities.seat_entity import SeatEntity
 from app.domain.repositories.seat_repository import AbstractSeatRepository
 from app.infrastructure.database.mappers.seat_mapper import SeatMapper
@@ -13,11 +14,12 @@ class SeatRepository(AbstractSeatRepository):
 
     async def get_by_flight(self, flight_id: str) -> list[SeatEntity]:
         result = await self.db.execute(
-            select(SeatModel).where(SeatModel.flight_id == flight_id)
+            select(SeatModel)
+            .options(joinedload(SeatModel.zone))
+            .where(SeatModel.flight_id == flight_id)
         )
-        seats = result.scalars().all()
+        seats = result.unique().scalars().all()
 
-        # Lấy danh sách ghế đã được đặt trong flight này (CSV)
         booked = await self.db.execute(
             select(BookingModel.selected_seat).where(
                 BookingModel.flight_id == flight_id,
@@ -29,12 +31,21 @@ class SeatRepository(AbstractSeatRepository):
             if row[0]:
                 reserved_labels.update(row[0].split(","))
 
-        entities = []
-        for s in seats:
-            entity = SeatMapper.to_entity(s)
-            entity.status = "reserved" if s.seat_label in reserved_labels else "available"
-            entities.append(entity)
-        return entities
+        return [
+            self._to_entity_with_status(s, reserved_labels) for s in seats
+        ]
+
+    async def get_by_flight_with_zones(self, flight_id: str) -> list[SeatEntity]:
+        return await self.get_by_flight(flight_id)
 
     async def update_status(self, seat_id: str, booking_id: str):
-        pass  
+        pass
+
+    def _to_entity_with_status(
+        self, s: SeatModel, reserved_labels: set[str]
+    ) -> SeatEntity:
+        entity = SeatMapper.to_entity(s)
+        is_reserved = s.seat_label in reserved_labels
+        entity.status = "reserved" if is_reserved else "available"
+        entity.is_available = not is_reserved
+        return entity
