@@ -33,5 +33,4 @@ class FlightMapper:
             duration_minutes=model.duration_minutes,
             price=model.price,
             stops=model.stops,
-            cabin_class=model.cabin_class,
         )

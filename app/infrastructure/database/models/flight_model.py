@@ -30,7 +30,6 @@ class FlightModel(Base):
     duration_minutes = Column(Integer)
     price = Column(Float)
     stops = Column(Integer)
-    cabin_class = Column(String(20))
 
 
     airline = relationship(

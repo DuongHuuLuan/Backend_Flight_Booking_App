@@ -39,7 +39,6 @@ def _to_flight_response(flight) -> FlightResponse:
         duration=flight.duration_minutes,
         price=flight.price,
         stops=flight.stops,
-        cabinClass=flight.cabin_class,
     )
 
 
@@ -65,7 +64,6 @@ async def search_flights(
         departure_date=date.fromisoformat(body.departure_date),
         return_date=date.fromisoformat(body.return_date) if body.return_date else None,
         passengers=body.passengers,
-        cabin_class=body.cabin_class,
     )
     flights = await uc.execute(params)
     return BaseResponse(data=[_to_flight_response(f) for f in flights], success=True)

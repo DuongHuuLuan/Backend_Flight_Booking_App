@@ -36,7 +36,6 @@ class GetBookingDetailUseCase:
         return BookingDetailResponse(
             id=booking.id,
             flightId=booking.flight_id,
-            cabinClass=booking.cabin_class,
             totalPrice=booking.total_price,
             status=booking.status,
             selectedSeats=booking.selected_seat,

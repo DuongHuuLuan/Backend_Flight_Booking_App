@@ -35,7 +35,6 @@ class BookingDetailPassengerResponse(BaseModel):
 class BookingDetailResponse(BaseModel):
     id: str
     flightId: str
-    cabinClass: str
     totalPrice: float
     status: str
     selectedSeats: str | None = None

@@ -10,7 +10,6 @@ class BookingModel(Base):
     id = Column(String(36), primary_key=True, index=True, nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     flight_id = Column(String(36), ForeignKey("flights.id"), nullable=False)
-    cabin_class = Column(String(20), nullable=False)
     total_price = Column(Float, nullable=False)
     status = Column(String(20), default="confirmed")
     selected_seat = Column(String(255), nullable=True)

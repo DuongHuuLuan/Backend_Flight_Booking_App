@@ -8,12 +8,6 @@ from app.domain.repositories.seat_repository import AbstractSeatRepository
 
 
 class CalculatePriceUseCase:
-    CABIN_MULTIPLIERS = {
-        "economy": 1.0,
-        "business": 1.5,
-        "first": 2.5,
-    }
-
     def __init__(
         self,
         booking_repo: AbstractBookingRepository,
@@ -36,32 +30,36 @@ class CalculatePriceUseCase:
             raise ValueError("Flight not found")
 
         seats = await self.seat_repo.get_by_flight_with_zones(flight.id)
-        cabin_mult = self.CABIN_MULTIPLIERS.get(booking.cabin_class, 1.0)
 
         base_fare = flight.price
-        cabin_fare = round(base_fare * cabin_mult, 2)
 
-        zone_details = []
-        zone_surcharge_total = 0.0
-
+        zone_details = {}
         for seat in seats:
             if seat.zone:
-                zone_price = round(base_fare * seat.zone.price_modifier, 2)
-                zone_surcharge_total += zone_price
+                zone_name = seat.zone.name
+                if zone_name not in zone_details:
+                    zone_details[zone_name] = {
+                        "zoneName": zone_name,
+                        "seatCount": 0,
+                        "pricePerSeat": round(base_fare * seat.zone.price_modifier, 2),
+                        "subtotal": 0.0,
+                    }
+                zone_details[zone_name]["seatCount"] += 1
+                zone_details[zone_name]["subtotal"] += zone_details[zone_name]["pricePerSeat"]
 
-        zone_surcharge_total = round(zone_surcharge_total, 2)
+        zone_surcharge_total = round(
+            sum(d["subtotal"] for d in zone_details.values()), 2
+        )
 
         grand_total = round(
-            base_fare + cabin_fare + zone_surcharge_total
-            + booking.service_total + booking.baggage_total,
+            zone_surcharge_total + booking.service_total + booking.baggage_total,
             2,
         )
 
         return PriceBreakdownResponse(
             baseFare=base_fare,
-            cabinFare=cabin_fare,
             zoneSurchargeTotal=zone_surcharge_total,
-            zoneDetails=zone_details,
+            zoneDetails=[ZonePriceItem(**d) for d in zone_details.values()],
             serviceTotal=booking.service_total,
             baggageTotal=booking.baggage_total,
             grandTotal=grand_total,

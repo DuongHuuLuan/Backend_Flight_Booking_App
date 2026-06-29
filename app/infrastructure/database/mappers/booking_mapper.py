@@ -9,7 +9,6 @@ class BookingMapper:
             id=model.id,
             user_id=model.user_id,
             flight_id=model.flight_id,
-            cabin_class=model.cabin_class,
             total_price=model.total_price,
             status=model.status,
             selected_seat=model.selected_seat,

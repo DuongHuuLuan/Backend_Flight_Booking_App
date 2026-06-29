@@ -19,7 +19,6 @@ class SeatMapper:
             id=model.id,
             flight_id=model.flight_id,
             seat_label=model.seat_label,
-            cabin_class=model.cabin_class,
             row_number=model.row_number,
             position=model.position,
             is_available=model.is_available,

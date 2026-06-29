@@ -15,7 +15,6 @@ class GetBookingUseCase:
         return BookingResponse(
             id=booking.id,
             flightId=booking.flight_id,
-            cabinClass=booking.cabin_class,
             totalPrice=booking.total_price,
             status=booking.status,
             createdAt=booking.created_at,

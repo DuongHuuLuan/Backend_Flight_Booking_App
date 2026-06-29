@@ -24,7 +24,6 @@ async def get_seat_layout(
     return [
         SeatResponse(
             seatLabel=s.seat_label,
-            cabinClass=s.cabin_class,
             rowNumber=s.row_number,
             position=s.position,
             status=s.status,

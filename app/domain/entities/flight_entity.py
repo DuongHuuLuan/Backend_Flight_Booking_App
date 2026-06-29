@@ -16,4 +16,3 @@ class FlightEntity:
     duration_minutes: int
     price: float
     stops: int
-    cabin_class: str
