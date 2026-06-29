@@ -15,7 +15,6 @@ class BookingRepository(AbstractBookingRepository):
             id=booking.id,
             user_id=booking.user_id,
             flight_id=booking.flight_id,
-            cabin_class=booking.cabin_class,
             total_price=booking.total_price,
             status=booking.status,
             selected_seat=booking.selected_seat,

@@ -8,11 +8,6 @@ from app.domain.repositories.seat_zone_repository import AbstractSeatZoneReposit
 
 
 class CreateBookingUseCase:
-    CABIN_MULTIPLIERS = {
-        "economy": 1.0,
-        "business": 1.5,
-        "first": 2.5,
-    }
     def __init__(
         self,
         booking_repo: AbstractBookingRepository,
@@ -33,27 +28,22 @@ class CreateBookingUseCase:
         if not request.seats:
             raise ValueError("At least one seat must be selected")
 
-        multiplier = self.CABIN_MULTIPLIERS.get(request.cabin_class, 1.0)
-        base_price = flight.price * multiplier
-        cabin_fare = round(base_price * len(request.seats), 2)
-
         seat_labels_csv = ",".join(s.seat_label for s in request.seats)
 
         zone_price_total = 0.0
         for seat in request.seats:
             zone = await self.zone_repo.get_by_id(seat.zone_id)
             if zone:
-                zone_price_total += round(base_price * zone.price_modifier, 2)
+                zone_price_total += round(flight.price * zone.price_modifier, 2)
         zone_price_total = round(zone_price_total, 2)
 
-        total_price = round(cabin_fare + zone_price_total, 2)
+        total_price = zone_price_total
 
         now = datetime.utcnow()
         entity = BookingEntity(
             id=str(uuid.uuid4()),
             user_id=user_id,
             flight_id=request.flight_id,
-            cabin_class=request.cabin_class,
             total_price=total_price,
             status="confirmed",
             created_at=now,
@@ -65,7 +55,6 @@ class CreateBookingUseCase:
         return BookingResponse(
             id=created.id,
             flightId=created.flight_id,
-            cabinClass=created.cabin_class,
             totalPrice=created.total_price,
             status=created.status,
             createdAt=created.created_at,

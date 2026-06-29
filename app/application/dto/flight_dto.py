@@ -26,7 +26,6 @@ class FlightResponse(BaseModel):
     duration: int
     price: float
     stops: int
-    cabinClass: str
 
 
 class FlightSearchRequest(BaseModel):
@@ -36,13 +35,7 @@ class FlightSearchRequest(BaseModel):
     departure_date: str
     return_date: str | None = None
     passengers: int = 1
-    cabin_class: str = "economy"
-    
-    
-class CabinClassOption(BaseModel):
-    cabinClass: str
-    price: float
-    amenities: list[str]
+
 
 class FlightDetailResponse(BaseModel):
     id: str
@@ -54,4 +47,4 @@ class FlightDetailResponse(BaseModel):
     arrivalTime: datetime
     duration: int
     stops: int
-    cabinClasses: list[CabinClassOption]
+    basePrice: float

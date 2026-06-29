@@ -3,7 +3,6 @@ from pydantic import BaseModel
 
 class SeatResponse(BaseModel):
     seatLabel: str
-    cabinClass: str
     rowNumber: int
     position: int
     status: str

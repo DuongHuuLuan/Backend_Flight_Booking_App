@@ -5,14 +5,12 @@ from app.application.dto.seat_zone_dto import SeatInput
 
 class CreateBookingRequest(BaseModel):
     flight_id: str
-    cabin_class: str
     seats: list[SeatInput]
 
 
 class BookingResponse(BaseModel):
     id: str
     flightId: str
-    cabinClass: str
     totalPrice: float
     status: str
     selectedSeats: str | None = None
@@ -31,7 +29,6 @@ class ZonePriceItem(BaseModel):
 
 class PriceBreakdownResponse(BaseModel):
     baseFare: float
-    cabinFare: float
     zoneSurchargeTotal: float
     zoneDetails: list[ZonePriceItem]
     serviceTotal: float

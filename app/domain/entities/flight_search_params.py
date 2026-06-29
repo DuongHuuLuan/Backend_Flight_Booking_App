@@ -10,4 +10,3 @@ class FlightSearchParams:
     departure_date: date
     return_date: date | None
     passengers: int
-    cabin_class: str
