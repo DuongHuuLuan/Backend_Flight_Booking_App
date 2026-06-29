@@ -8,6 +8,11 @@ from app.infrastructure.database.models.city_model import CityModel
 from app.infrastructure.database.models.airline_model import AirlineModel
 from app.infrastructure.database.models.airport_model import AirportModel
 from app.infrastructure.database.models.flight_model import FlightModel
+from app.infrastructure.database.models.seat_zone_model import SeatZoneModel
+from app.infrastructure.database.models.service_model import ServiceModel
+from app.infrastructure.database.models.zone_service_eligibility_model import (
+    ZoneServiceEligibilityModel,
+)
 
 
 async def seed():
@@ -48,6 +53,15 @@ async def seed():
         ]
         airlines = [AirlineModel(id=i, name=n, logo_url=l) for i, n, l in airlines_data]
         db.add_all(airlines)
+        await db.flush()
+
+        # ── Seat Zones ──
+        zones = [
+            SeatZoneModel(id="ZONE_VIP",  name="VIP",    price_modifier=2.0, description="Khu vực VIP cao cấp, hàng ghế 1-6",   color_hex="#FFD700"),
+            SeatZoneModel(id="ZONE_MID",  name="Trung",  price_modifier=1.0, description="Khu vực trung tâm, hàng ghế 7-13",  color_hex="#4CAF50"),
+            SeatZoneModel(id="ZONE_STD",  name="Thường", price_modifier=0.7, description="Khu vực tiêu chuẩn, hàng ghế 14-20", color_hex="#9E9E9E"),
+        ]
+        db.add_all(zones)
         await db.flush()
 
         # ── Airports ──
@@ -133,8 +147,19 @@ async def seed():
                 duration_minutes=915, price=980, stops=2, cabin_class="economy"),
         ]
         db.add_all(flights)
-        
-        seat_labels =[]
+        await db.flush()
+
+        # ── Zone map for seats ──
+        zone_map = {}
+        for row in range(1, 21):
+            if row <= 6:
+                zone_map[row] = "ZONE_VIP"
+            elif row <= 13:
+                zone_map[row] = "ZONE_MID"
+            else:
+                zone_map[row] = "ZONE_STD"
+
+        seat_labels = []
         for row in range(1, 21):
             for pos, label in enumerate(["A", "B", "C", "D"], start=1):
                 seat_labels.append((f"{row}{label}", row, pos))
@@ -143,17 +168,63 @@ async def seed():
             cabin = flight.cabin_class
             for label, row, pos in seat_labels:
                 db.add(SeatModel(
-                id=f"{flight.id}-{label}",
-                flight_id=flight.id,
-                seat_label=label,
-                cabin_class=cabin,
-                row_number=row,
-                position=pos,
-                is_available=True,
-            ))
+                    id=f"{flight.id}-{label}",
+                    flight_id=flight.id,
+                    seat_label=label,
+                    cabin_class=cabin,
+                    row_number=row,
+                    position=pos,
+                    is_available=True,
+                    zone_id=zone_map[row],
+                ))
+        await db.flush()
+
+        # ── Services ──
+        services = [
+            ServiceModel(id="SVC_MEAL_VIP",   type="meal",    name="Suất VIP hảo hạng",   price=200000, max_per_passenger=1),
+            ServiceModel(id="SVC_MEAL_MID",   type="meal",    name="Suất ăn thương gia",  price=100000, max_per_passenger=1),
+            ServiceModel(id="SVC_MEAL_STD",   type="meal",    name="Suất ăn cơ bản",      price=50000,  max_per_passenger=1),
+            ServiceModel(id="SVC_MEAL_CHILD", type="meal",    name="Suất ăn trẻ em",      price=30000,  max_per_passenger=1),
+            ServiceModel(id="SVC_MEAL_DIET",  type="meal",    name="Suất ăn kiêng",       price=80000,  max_per_passenger=1),
+            ServiceModel(id="SVC_DRINK_VIP",  type="drink",   name="Đồ uống cao cấp",     price=100000, max_per_passenger=2),
+            ServiceModel(id="SVC_DRINK_MID",  type="drink",   name="Đồ uống thường",      price=30000,  max_per_passenger=2),
+            ServiceModel(id="SVC_DRINK_CHILD",type="drink",   name="Đồ uống trẻ em",      price=20000,  max_per_passenger=2),
+            ServiceModel(id="SVC_BAG_1",     type="baggage", name="Hành lý 20kg",         price=200000, max_per_passenger=1),
+            ServiceModel(id="SVC_BAG_2",     type="baggage", name="Hành lý 30kg",         price=350000, max_per_passenger=1),
+            ServiceModel(id="SVC_BAG_3",     type="baggage", name="Hành lý 40kg",         price=500000, max_per_passenger=1),
+        ]
+        db.add_all(services)
+        await db.flush()
+
+        # ── Zone Service Eligibility ──
+        meal_drink_rules = [
+            ("ZONE_VIP", "SVC_MEAL_VIP",   "child"),  ("ZONE_VIP", "SVC_MEAL_VIP",   "adult"),
+            ("ZONE_VIP", "SVC_MEAL_VIP",   "senior"), ("ZONE_VIP", "SVC_DRINK_VIP",  "child"),
+            ("ZONE_VIP", "SVC_DRINK_VIP",  "adult"),  ("ZONE_VIP", "SVC_DRINK_VIP",  "senior"),
+            ("ZONE_MID", "SVC_MEAL_MID",   "adult"),  ("ZONE_MID", "SVC_MEAL_DIET",  "senior"),
+            ("ZONE_MID", "SVC_MEAL_CHILD", "child"),  ("ZONE_MID", "SVC_DRINK_MID",  "adult"),
+            ("ZONE_MID", "SVC_DRINK_MID",  "senior"), ("ZONE_MID", "SVC_DRINK_CHILD","child"),
+            ("ZONE_STD", "SVC_MEAL_STD",   "adult"),  ("ZONE_STD", "SVC_MEAL_DIET",  "senior"),
+            ("ZONE_STD", "SVC_MEAL_CHILD", "child"),  ("ZONE_STD", "SVC_DRINK_MID",  "adult"),
+            ("ZONE_STD", "SVC_DRINK_MID",  "senior"), ("ZONE_STD", "SVC_DRINK_CHILD","child"),
+        ]
+
+        baggage_rules = []
+        for zone_id in ["ZONE_VIP", "ZONE_MID", "ZONE_STD"]:
+            for age in ["child", "adult", "senior"]:
+                for bag_id in ["SVC_BAG_1", "SVC_BAG_2", "SVC_BAG_3"]:
+                    baggage_rules.append((zone_id, bag_id, age))
+
+        all_rules = meal_drink_rules + baggage_rules
+        db.add_all([
+            ZoneServiceEligibilityModel(id=f"ELIG_{i}", zone_id=z, service_id=s, age_group=a)
+            for i, (z, s, a) in enumerate(all_rules)
+        ])
+
         await db.commit()
         print(f"Seed complete: {len(countries)} countries, {len(cities)} cities, "
-              f"{len(airlines)} airlines, {len(airports)} airports, {len(flights)} flights")
+              f"{len(airlines)} airlines, {len(zones)} zones, {len(airports)} airports, "
+              f"{len(flights)} flights, {len(services)} services, {len(all_rules)} eligibility rules")
 
 
 if __name__ == "__main__":
