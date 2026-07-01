@@ -215,8 +215,9 @@ def get_booking_detail_usecase(
     booking_repo: AbstractBookingRepository = Depends(get_booking_repo),
     flight_repo: AbstractFlightRepository = Depends(get_flight_repo),
     passenger_repo: AbstractPassengerRepository = Depends(get_passenger_repo),
+    service_repo: AbstractServiceRepository = Depends(get_service_repo),
 ) -> GetBookingDetailUseCase:
-    return GetBookingDetailUseCase(booking_repo, flight_repo, passenger_repo)
+    return GetBookingDetailUseCase(booking_repo, flight_repo, passenger_repo, service_repo)
 
 
 def get_calculate_price_usecase(

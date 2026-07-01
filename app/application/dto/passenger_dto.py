@@ -13,6 +13,7 @@ class PassengerData(BaseModel):
     address: str | None = None
     email: str | None = None
     id_number: str | None = None
+    baggage_level: str | None = None
 
 
 class CreatePassengersRequest(BaseModel):

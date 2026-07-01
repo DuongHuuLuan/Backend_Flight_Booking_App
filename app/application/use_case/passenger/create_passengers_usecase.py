@@ -43,6 +43,7 @@ class CreatePassengersUseCase:
                 address=d.address,
                 email=d.email,
                 id_number=d.id_number,
+                baggage_level=d.baggage_level or "none",
             )
             for d in request.passengers
         ]

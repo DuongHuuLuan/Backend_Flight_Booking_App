@@ -209,7 +209,8 @@ async def seed():
         # ── Zone Service Eligibility ──
         meal_drink_rules = [
             ("ZONE_VIP", "SVC_MEAL_VIP",   "child"),  ("ZONE_VIP", "SVC_MEAL_VIP",   "adult"),
-            ("ZONE_VIP", "SVC_MEAL_VIP",   "senior"), ("ZONE_VIP", "SVC_DRINK_VIP",  "child"),
+            ("ZONE_VIP", "SVC_MEAL_VIP",   "senior"),
+            ("ZONE_VIP", "SVC_MEAL_CHILD", "child"),  ("ZONE_VIP", "SVC_DRINK_CHILD","child"),
             ("ZONE_VIP", "SVC_DRINK_VIP",  "adult"),  ("ZONE_VIP", "SVC_DRINK_VIP",  "senior"),
             ("ZONE_MID", "SVC_MEAL_MID",   "adult"),  ("ZONE_MID", "SVC_MEAL_DIET",  "senior"),
             ("ZONE_MID", "SVC_MEAL_CHILD", "child"),  ("ZONE_MID", "SVC_DRINK_MID",  "adult"),
