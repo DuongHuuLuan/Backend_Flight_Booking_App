@@ -30,6 +30,7 @@ class BookingDetailPassengerResponse(BaseModel):
     email: str | None = None
     idNumber: str | None = None
     baggageLevel: str = "none"
+    baggageName: str = "None"
 
 
 class BookingDetailResponse(BaseModel):

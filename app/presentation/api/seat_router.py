@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends
 from app.application.dto.seat_dto import SeatResponse, SelectSeatRequest
-from app.application.dto.seat_zone_dto import FlightSeatLayoutResponse
-from app.application.dto.common import BaseResponse
+from app.application.dto.seat_zone_dto import SeatZoneResponse
 from app.application.use_case.seat.get_seat_layout_usecase import GetSeatLayoutUseCase
 from app.application.use_case.seat.select_seat_usecase import SelectSeatUseCase
 from app.application.use_case.seat.get_seat_zones_usecase import GetSeatZonesUseCase
@@ -35,13 +34,13 @@ async def get_seat_layout(
     ]
 
 
-@router.get("/{flight_id}/zones", response_model=BaseResponse[FlightSeatLayoutResponse])
+@router.get("/{flight_id}/zones", response_model=list[SeatZoneResponse])
 async def get_seat_zones(
     flight_id: str,
     usecase: GetSeatZonesUseCase = Depends(get_seat_zones_usecase),
 ):
     result = await usecase.execute(flight_id)
-    return BaseResponse(data=result, success=True)
+    return result.zones
 
 
 @router.patch("/bookings/{booking_id}/seat")

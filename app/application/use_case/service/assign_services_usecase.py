@@ -45,7 +45,7 @@ class AssignServicesUseCase:
             baggage_price = sum(
                 s.price for s in all_services
                 if s.type == "baggage"
-                and passenger_input.baggage_level in s.name
+                and s.id == passenger_input.baggage_level
             )
 
             if passenger_input.baggage_level and passenger_input.baggage_level != "none":
