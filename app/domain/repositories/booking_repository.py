@@ -19,6 +19,7 @@ class AbstractBookingRepository(ABC):
         zone_price_total: float,
         service_total: float,
         baggage_total: float,
+        total_price: float | None = None,
     ) -> None: ...
 
     @abstractmethod

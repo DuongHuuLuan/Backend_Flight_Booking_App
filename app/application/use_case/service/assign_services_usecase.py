@@ -27,8 +27,8 @@ class AssignServicesUseCase:
         all_services = await self.service_repo.get_all_services()
         service_map = {s.id: s for s in all_services}
 
-        total_service = 0.0
-        total_baggage = 0.0
+        total_service = booking.service_total or 0.0
+        total_baggage = booking.baggage_total or 0.0
         updated_passengers = []
 
         for passenger_input in request.passengers:
@@ -54,11 +54,15 @@ class AssignServicesUseCase:
 
             updated_passengers.append(passenger)
 
+        grand_total = round(
+            booking.zone_price_total + total_service + total_baggage, 2
+        )
         await self.booking_repo.update_totals(
             booking_id,
             zone_price_total=booking.zone_price_total,
             service_total=total_service,
             baggage_total=total_baggage,
+            total_price=grand_total,
         )
 
         return [

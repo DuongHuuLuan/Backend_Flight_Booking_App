@@ -49,6 +49,7 @@ class BookingRepository(AbstractBookingRepository):
         zone_price_total: float,
         service_total: float,
         baggage_total: float,
+        total_price: float | None = None,
     ) -> None:
         result = await self.db.execute(
             select(BookingModel).where(BookingModel.id == booking_id)
@@ -58,6 +59,8 @@ class BookingRepository(AbstractBookingRepository):
             model.zone_price_total = zone_price_total
             model.service_total = service_total
             model.baggage_total = baggage_total
+            if total_price is not None:
+                model.total_price = total_price
             await self.db.commit()
 
     async def update_status(self, booking_id: str, status: str) -> None:

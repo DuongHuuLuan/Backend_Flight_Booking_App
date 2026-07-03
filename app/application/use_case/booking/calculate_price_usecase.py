@@ -29,19 +29,24 @@ class CalculatePriceUseCase:
         if flight is None:
             raise ValueError("Flight not found")
 
-        seats = await self.seat_repo.get_by_flight_with_zones(flight.id)
+        selected_labels = set()
+        if booking.selected_seat:
+            selected_labels = {s.strip() for s in booking.selected_seat.split(",")}
 
-        base_fare = flight.price
+        all_seats = await self.seat_repo.get_by_flight_with_zones(flight.id)
+        selected_seats = [s for s in all_seats if s.seat_label in selected_labels]
+
+        base_fare = flight.price * len(selected_seats)
 
         zone_details = {}
-        for seat in seats:
+        for seat in selected_seats:
             if seat.zone:
                 zone_name = seat.zone.name
                 if zone_name not in zone_details:
                     zone_details[zone_name] = {
                         "zoneName": zone_name,
                         "seatCount": 0,
-                        "pricePerSeat": round(base_fare * seat.zone.price_modifier, 2),
+                        "pricePerSeat": round(flight.price * seat.zone.price_modifier, 2),
                         "subtotal": 0.0,
                     }
                 zone_details[zone_name]["seatCount"] += 1
