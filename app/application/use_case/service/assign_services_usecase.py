@@ -39,7 +39,7 @@ class AssignServicesUseCase:
 
             psngr_service_total = sum(
                 service_map[sid].price for sid in passenger_input.service_ids
-                if sid in service_map
+                if sid in service_map and service_map[sid].type != "baggage"
             )
 
             baggage_price = sum(
